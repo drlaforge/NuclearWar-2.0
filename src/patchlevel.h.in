@@ -1,0 +1,35 @@
+#ifndef PATCHLEVEL_H__
+#define PATCHLEVEL_H__ 1
+
+/*--------------------------------------------------------------------------
+ * Various version numbers and strings, collected here so that we have
+ * to modify only one file.
+ *--------------------------------------------------------------------------
+ */
+
+#define RELEASE_TYPE "$VersionType$"
+#define RELEASE_LONGTYPE "$VersionLongType$"
+
+#define RELEASE_DATE "$VersionDate$"
+
+#define COMMIT_ID "$VersionRevision$"
+
+#if $VersionPatch$ > 0
+#define DRIVER_VERSION "$VersionMajor$.$VersionMinor$.$VersionMicro$.$VersionPatch$"
+#else
+#define DRIVER_VERSION "$VersionMajor$.$VersionMinor$.$VersionMicro$"
+#endif
+
+#define VERSION_MAJOR "$VersionMajor$"
+
+#define VERSION_MINOR "$VersionMinor$"
+
+#define VERSION_MICRO "$VersionMicro$"
+
+#define VERSION_PATCH "$VersionPatch$"
+
+#define RELEASE_TAGGER "$VersionTagger$"
+
+#define LOCAL_LEVEL ""
+
+#endif /* PATCHLEVEL_H__ */

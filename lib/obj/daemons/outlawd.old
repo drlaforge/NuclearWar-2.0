@@ -1,0 +1,23 @@
+/* Checks which players have chosen to be outlaw already,
+   and what they chose. */
+
+#define SAVE "obj/o/outlaws"
+
+mapping outlaws;
+
+query_done(name) {
+    return outlaws[name];
+}
+
+set_done(name,i) {
+    outlaws[name] = i+1;
+    save_object(SAVE);
+}
+
+create() {
+    outlaws = ([]);
+    (this_player()) ?
+        (restore_object(SAVE)) :
+        (save_object(SAVE));
+}
+

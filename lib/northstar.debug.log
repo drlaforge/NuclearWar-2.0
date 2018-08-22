@@ -1,0 +1,20 @@
+2018.07.19 08:07:54 LDMud 3.5.0 (3.5.1) (release)
+2018.07.19 08:07:54 Seeding PRG from /dev/urandom.
+2018.07.19 08:07:54 Attempting to start erq '/home/nuclear/nuclear/bin/erq'.
+2018.07.19 08:07:54 Hostname 'northstar.thirdhosting.com' address '144.217.205.176'
+2018.07.19 08:07:54 UDP recv-socket requested for port: 4092
+2018.07.19 08:07:54 LDMud ready for users.
+2018.07.19 08:07:56 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:07:56 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:07:58 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:07:58 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:08:02 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:08:02 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:08:16 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:08:16 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:08:22 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:08:22 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:08:52 Warning: Indexing past string end is deprecated: index 0, string length: 0.
+2018.07.19 08:08:52 program: players/lars/mapper.c, object: players/lars/mapper line 108
+2018.07.19 08:57:59 Error (110) upon reading socket 7 (ip 0x10e0c10 'obj/player#76'), closing connection: Connection timed out
+2018.08.20 04:41:02 Error (104) upon reading socket 7 (ip 0x10e0860 'obj/player#83'), closing connection: Connection reset by peer

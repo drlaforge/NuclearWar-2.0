@@ -1,0 +1,327 @@
+/* A standard soul object.
+ *
+ * AbacusMud 1993
+ * -Contributor: Dan Solli (Menta)
+
+ * -Default adverbs: Musse Pigg (Bigfoot)
+
+ * -Made it a daemon: Musse again..
+
+ * -Feelings at objects and a null (%) feeling: Stor Gnun (Draconian)
+
+ * -Demand storage for feelings (feelings are stored in memory first
+ *   time they are used. We dont have to read the file from disk 
+ *   more than once per used feeling, and unused feelings arent loaded 
+ *   into memory): Mickey Mouse (Bigfoot)
+
+ * -Demand storage for the adverbs as well.: Biggie.
+
+ * -Added a profile option to see what feelings are used most etc..: Bigfoot.
+
+
+ * -Nuked profiling and loads feelings into memory at loadtime.: Bigfoot
+
+ * -Separating helpfile updating for feelings and adverbs so it can handle
+ *  more of them and query_feeling() for chatline usage - Scarblac
+ */
+
+/*
+ * Where are the adverbs defined ?
+ */
+#define ADVERBS      "/etc/adverbs"
+
+/*
+ * Where are the feelings defined ?
+ */
+#define FEELINGS        "/etc/feelings" 
+
+/*
+ * Where is the feelings/advers saved ?
+ */
+#define SOULDATA	"obj/o/soul"
+
+/* 
+ * Where is the help file saved ?
+ */
+#define TARGET_F "/doc/mortal/feelings" 
+#define TARGET_D "/doc/mortal/adverbs"
+
+#define replace(XX,YY,ZZ)	implode(explode(XX,YY),ZZ)
+
+mapping feelings = ([ ]);	/* mapping of demand stored feelings */
+mapping adverbs = ([ ]);	/* mapping of demand stored adverbs */
+
+void create()
+{
+    restore_object(SOULDATA);
+}
+
+nomask do_feeling(string str,string cmd) {
+    object who;
+    string *feeling;
+    string act1, act2, adverb, dum, whom, xverb, def;
+
+    if(cmd) {
+        if(sscanf(str,"%s %s",cmd,str) != 2) {
+            cmd = str;
+            str = 0;
+        }
+    }
+    else
+        cmd = query_verb();
+    if (!mappingp(feelings)) 
+        create();
+    if(!(feeling = feelings[cmd]))
+        return 0;
+    
+    if(this_player()->query_ghost())
+        return !notify_fail("You fail.\n");
+
+    if(environment(this_player()) &&
+       file_name(environment(this_player())) == "room/post") /* Ugly hack..*/
+	  return !notify_fail("Go outside to use feelings.\n");
+
+    if(!strlen(feeling[3]))
+        feeling[3] = cmd+"-"+cmd+"s";
+    if(str) {
+        if(sscanf(str,"%s %s",adverb,whom) != 2) {
+            if(who = present(str,environment(this_player()))) {
+                if(strlen(feeling[2]))
+                    return !action(replace(feeling[1],"#AD",feeling[2]),feeling[3],who);
+                return !action(replace(feeling[1]," #AD",""),feeling[3],who);
+            }
+            else if(adverb = find_adverb(str)) {
+                if(strlen(adverb))
+                    return !action(replace(feeling[0],"#AD",adverb),feeling[3]);
+                return !action(replace(feeling[0]," #AD",""),feeling[3]);
+           }
+           else
+               return !notify_fail("No such player or adverb: "+str+".\n");
+        }
+        else {
+            if(!(who = present(whom,environment(this_player()))))
+                return !notify_fail(capitalize(whom)+" isn't here.\n");
+            str = adverb;
+            if(adverb = find_adverb(adverb)) {
+                return !action(replace(feeling[1],(adverb==""?" ":"")+"#AD",adverb),
+                            feeling[3],who);
+            }
+            return !notify_fail("No such adverb: "+str+".\n");
+        }
+    }
+    else {
+        if(strlen(feeling[2]))
+            return !action(replace(feeling[0],"#AD",feeling[2]),feeling[3]);
+        return !action(replace(feeling[0]," #AD",""),feeling[3]);
+    }
+}
+
+nomask find_adverb(string adverb){
+  string X;
+
+  if(adverb == "%")
+      return "";
+  if(!(X = adverbs[adverb]))
+      if(member_array(adverb, m_values(adverbs)) >= 0)
+          X = adverb;
+  return X;
+}
+
+reload(what)
+{
+    status both;
+    string file, *lines;
+
+    switch(what) {
+        case "feelings":
+            feelings = ([]);
+            file = read_file(FEELINGS);
+            break;
+        case "adverbs":
+            adverbs = ([]);
+            file = read_file(ADVERBS);
+            break;
+        default:
+            return;
+    }
+
+    if (stringp(file) && pointerp((lines = explode(file, "\n"))))
+        map_array(lines, "map_data", this_object(), what);
+
+    update(what);
+    save_object(SOULDATA);
+}
+
+map_data(arg, what)
+{
+    string *arr;
+
+    if (!stringp(arg))
+        return;
+    if (pointerp(arr = explode(arg, "@")))
+        switch(what) {
+            case "feelings":
+                feelings[arr[0]] = arr[1..sizeof(arr)-1];
+                if (sizeof(feelings[arr[0]]) < 4)
+                    feelings[arr[0]] += ({ "" });
+                break;
+            case "adverbs":
+                adverbs[arr[0]] = arr[1];
+                break;
+            default: return;
+        }
+}
+
+update(string what)
+{
+    string *adverb_help;
+    if (what == "feelings") {
+        if(file_size(TARGET_F) > 0)
+            rm(TARGET_F);
+        write_file(TARGET_F,
+           sprintf(
+           "\nHere are the feelings you can use for atmospherical fun:\n%-#*s\n",80,
+             implode(sort_array(m_indices(feelings),"sort",this_object()),"\n"))+
+           "\nSee also: help adverbs (A list of adverbs to go with feelings)");
+    }
+    else {
+        if(file_size(TARGET_D) > 0)
+            rm(TARGET_D);
+        write_file(TARGET_D,
+            "\nHere are the adverbs you can use for atmospherical fun together with feelings:\n"+
+           sprintf("%-*#s\n", 80,implode(
+			       sort_array(
+					  map_array(
+						    m_indices(adverbs),
+						    "mapper",
+						    this_object(),
+						    adverbs
+						    ),
+					  "sort",
+					  this_object()
+					  ),
+			       "\n"
+			       )
+		       ) +
+           "\nSee also: help feelings (A list of feelings to go with adverbs)\n\n");
+    }
+    return;
+}
+
+sort(arg, arg2)
+{
+    if (!stringp(arg) || !stringp(arg2))
+	return 0;
+#ifdef MUDOS
+    return(strcmp(arg2, arg));
+#else
+    return(strcmp(arg, arg2) > 0);
+#endif
+}
+
+mapper(arg, verbs)
+{
+    return (arg + " = " + verbs[arg]);
+}
+
+query_feelings() { return feelings; }
+query_adverbs() { return adverbs; }
+
+query_feeling(string cmd,object player,object victim) {
+    string *feeling, adv;
+
+    if (!cmd || !player) return !notify_fail("Strange sould error.\n");
+    cmd = explode(cmd," ");
+    if (!pointerp(cmd) || !sizeof(cmd)) return !notify_fail("Very strange sould error.\n");
+    if (!(feeling = feelings[cmd[0]])) return !notify_fail("No such feeling: "+cmd[0]+".\n");
+
+    if (!strlen(feeling[3])) feeling[3] = cmd[0]+"-"+cmd[0]+"s";
+
+    if (sizeof(cmd) > 1) {
+        if (sizeof(cmd) == 2) {
+            if(victim) {
+                if(strlen(feeling[2]))
+                    return own_action(replace(feeling[1],"#AD",feeling[2]),feeling[3],victim,player);
+                return own_action(replace(feeling[1]," #AD",""),feeling[3],victim,player);
+            }
+            else if(adv = find_adverb(cmd[1])) {
+                if(strlen(adv))
+                    return own_action(replace(feeling[0],"#AD",adv),feeling[3],0,player);
+                return own_action(replace(feeling[0]," #AD",""),feeling[3],0,player);
+            }
+            else
+                return 0;
+        }
+        else {
+            if (!victim) return 0;
+            if(adv = find_adverb(cmd[1])) {
+                return own_action(replace(feeling[1],(adv==""?" ":"")+"#AD",adv),
+                            feeling[3],victim,player);
+            }
+            return 0;
+        }
+    }
+    else {
+        if(strlen(feeling[2]))
+            return own_action(replace(feeling[0],"#AD",feeling[2]),feeling[3],0,player);
+        return own_action(replace(feeling[0]," #AD",""),feeling[3],0,player);
+    }
+}
+
+own_action(string fmt, string verb, object victim, object tpl) {
+    string pre, icon, result,tmp;
+
+    result = "";
+    verb = make_verbs(verb);
+    while (sscanf(fmt+" ","%s#%s %s",pre,icon,fmt)==3) {
+        result += pre;
+        fmt = fmt[0..-2];
+        if (icon[0] == '#') {
+            result += verb[0] + icon[1..-1];
+            verb = verb[1..sizeof(verb)-1];
+        } else
+        if (strlen(icon) > 1 && victim && icon[0..1] == "V#") {
+            result += verb[0] + icon[2..-1];
+            verb = verb[1..sizeof(verb)-1];
+        }
+        else {
+            switch(icon[0..1]) {
+                case "NA": result += tpl->query_name() + icon[2..-1]; break;
+                case "PR": result += tpl->query_pronoun() + icon[2..-1]; break;
+                case "PO": result += tpl->query_possessive() + icon[2..-1]; break;
+                case "OB": result += tpl->query_objective() + icon[2..-1]; break;
+                case "OS": result += tpl->query_objective() + "self" + icon[2..-1]; break;
+                case "NS": result += (tmp = tpl->query_name())+
+                        (tmp[strlen(tmp)-1] == 's'?"'":"'s")+icon[2..-1]; break;
+                    default: break;
+            }
+            if (strlen(icon) > 2) switch(icon[0..2]) {
+                case "VNA": result += victim->query_name() + icon[3..-1]; break;
+                case "VPR": result += victim->query_pronoun() + icon[3..-1]; break;
+                case "VPO": result += victim->query_possessive() + icon[3..-1]; break;
+                case "VOB": result += victim->query_objective() + icon[3..-1]; break;
+                case "VOS": result += victim->query_objective() + "self" + icon[3..-1]; break;
+                case "VNS": result += (tmp = victim->query_name())+
+                        (tmp[strlen(tmp)-1] == 's'?"'":"'s")+icon[3..-1]; break;
+                    default: break;
+            }
+        }
+        if (strlen(fmt)) fmt = " "+fmt;
+    }
+    return result+fmt;
+}
+
+static make_verbs(string in)
+{
+    string verb,*verbs;
+
+    verbs = ({});
+    if(!stringp(in) || in == "")
+        return;
+    if(in[strlen(in)-1] != ',')
+        in += ",";
+    while(sscanf(in, "%s,%s", verb, in) == 2)
+        verbs += ({ explode(verb, "-")[1] });
+    return verbs;
+}
+

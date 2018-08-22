@@ -1,0 +1,30 @@
+obj/debug.h line 43 before end of line: Missing 'return <value>' statement
+obj/armour.c line 82 before end of line: Missing 'return <value>' statement
+obj/player.c line 2269 before ';': transfer() is deprecated: replace by a simul-efun
+obj/debug.h line 43 before end of line: Missing 'return <value>' statement
+obj/trace.c line 313 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+obj/trace2.c line 294 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+obj/trace2.c line 493 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+room/bank.c line 28 before ';': transfer() is deprecated: replace by a simul-efun
+room/bank.c line 36 before ';': transfer() is deprecated: replace by a simul-efun
+room/fortress.c line 51 before ';': transfer() is deprecated: replace by a simul-efun
+room/orc_vall.c line 70 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 207 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 221 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 228 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 236 before ';': transfer() is deprecated: replace by a simul-efun
+obj/debug.h line 43 before end of line: Missing 'return <value>' statement
+obj/armour.c line 82 before end of line: Missing 'return <value>' statement
+obj/player.c line 2269 before ';': transfer() is deprecated: replace by a simul-efun
+obj/debug.h line 43 before end of line: Missing 'return <value>' statement
+obj/trace.c line 313 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+obj/trace2.c line 294 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+obj/trace2.c line 493 before ' != 0) {': transfer() is deprecated: replace by a simul-efun
+room/bank.c line 28 before ';': transfer() is deprecated: replace by a simul-efun
+room/bank.c line 36 before ';': transfer() is deprecated: replace by a simul-efun
+room/fortress.c line 51 before ';': transfer() is deprecated: replace by a simul-efun
+room/orc_vall.c line 70 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 207 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 221 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 228 before ';': transfer() is deprecated: replace by a simul-efun
+room/vill_road2.c line 236 before ';': transfer() is deprecated: replace by a simul-efun
