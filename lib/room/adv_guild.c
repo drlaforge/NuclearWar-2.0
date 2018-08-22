@@ -1,6 +1,5 @@
 #include "std.h"
 #include "tune.h"
-//test
 
 #undef EXTRA_RESET
 #define EXTRA_RESET extra_reset(arg);
